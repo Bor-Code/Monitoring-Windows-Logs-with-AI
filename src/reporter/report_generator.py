@@ -1,0 +1,238 @@
+import os
+from datetime import datetime
+
+REPORTS_DIR = "reports"
+
+def generate_report(
+    events: list[dict],
+    analysis_results: dict,
+    ai_assessment: str,
+) -> str:
+    os.makedirs(REPORTS_DIR, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"threat_report_{timestamp}.html"
+    filepath = os.path.join(REPORTS_DIR, filename)
+    html = _build_html(events, analysis_results, ai_assessment, timestamp)
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"\n[+] Report saved: {filepath}")
+    return filepath
+
+def _build_html(
+    events: list[dict],
+    analysis_results: dict,
+    ai_assessment: str,
+    timestamp: str,
+) -> str:
+    flagged_ips = analysis_results.get("flagged_ips", [])
+    flagged_count = len(flagged_ips)
+    if flagged_count == 0:
+        threat_level, banner_color = "CLEAN", "#2ecc71"
+    elif flagged_count <= 2:
+        threat_level, banner_color = "MEDIUM", "#f39c12"
+    else:
+        threat_level, banner_color = "HIGH", "#e74c3c"
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Threat Report — {timestamp}</title>
+    <style>
+        body {{
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f1117;
+            color: #cdd6f4;
+            margin: 0;
+            padding: 2rem;
+        }}
+        h1, h2 {{
+            color: #89b4fa;
+        }}
+        .banner {{
+            background: {banner_color};
+            color: #0f1117;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }}
+        .section {{
+            background: #1e1e2e;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }}
+        .stat-grid {{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }}
+        .stat-box {{
+            background: #181825;
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+        }}
+        .stat-box .value {{
+            font-size: 2rem;
+            font-weight: bold;
+            color: #89b4fa;
+        }}
+        .stat-box .label {{
+            font-size: 0.8rem;
+            color: #6c7086;
+            margin-top: 0.3rem;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }}
+        th {{
+            background: #181825;
+            color: #89b4fa;
+            padding: 0.6rem 1rem;
+            text-align: left;
+        }}
+        td {{
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid #313244;
+        }}
+        tr:hover td {{
+            background: #181825;
+        }}
+        .tag {{
+            display: inline-block;
+            background: #e74c3c22;
+            color: #e74c3c;
+            border: 1px solid #e74c3c55;
+            border-radius: 4px;
+            padding: 0.1rem 0.5rem;
+            font-size: 0.75rem;
+            margin: 0.1rem;
+        }}
+        .ai-section {{
+            white-space: pre-wrap;
+            line-height: 1.7;
+            font-size: 0.95rem;
+            color: #cdd6f4;
+        }}
+        .footer {{
+            text-align: center;
+            color: #45475a;
+            font-size: 0.8rem;
+            margin-top: 2rem;
+        }}
+    </style>
+</head>
+<body>
+
+    <h1>🛡️ AI-Powered Windows Event Log — Threat Report</h1>
+
+    <div class="banner">
+        Overall Threat Level: {threat_level}
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="section">
+        <h2>📊 Summary</h2>
+        <div class="stat-grid">
+            <div class="stat-box">
+                <div class="value">{analysis_results.get('total_events_analyzed', 0)}</div>
+                <div class="label">Events Analyzed</div>
+            </div>
+            <div class="stat-box">
+                <div class="value">{analysis_results.get('unique_source_ips', 0)}</div>
+                <div class="label">Unique Source IPs</div>
+            </div>
+            <div class="stat-box">
+                <div class="value">{flagged_count}</div>
+                <div class="label">Flagged IPs</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flagged IPs -->
+    <div class="section">
+        <h2>🚨 Flagged IP Addresses</h2>
+        {_build_flagged_table(flagged_ips)}
+    </div>
+
+    <!-- Raw Events -->
+    <div class="section">
+        <h2>📋 Raw Event Log</h2>
+        {_build_events_table(events)}
+    </div>
+
+    <!-- AI Assessment -->
+    <div class="section">
+        <h2>🤖 AI Threat Assessment</h2>
+        <div class="ai-section">{ai_assessment}</div>
+    </div>
+
+    <div class="footer">
+        Generated by AI-Powered Windows Event Log Analyzer &nbsp;|&nbsp; {timestamp}
+    </div>
+
+</body>
+</html>"""
+
+
+def _build_flagged_table(flagged_ips: list[dict]) -> str:
+    """Renders the flagged IPs as an HTML table."""
+    if not flagged_ips:
+        return "<p style='color:#2ecc71'>✓ No suspicious IPs detected.</p>"
+    rows = ""
+    for entry in flagged_ips:
+        tags = "".join(f'<span class="tag">{r}</span>' for r in entry["triggered_rules"])
+        users = ", ".join(entry["targeted_usernames"])
+        rows += f"""
+        <tr>
+            <td>{entry['ip']}</td>
+            <td>{entry['attempt_count']}</td>
+            <td>{users}</td>
+            <td>{tags}</td>
+        </tr>"""
+    return f"""
+    <table>
+        <thead>
+            <tr>
+                <th>IP Address</th>
+                <th>Failed Attempts</th>
+                <th>Targeted Users</th>
+                <th>Triggered Rules</th>
+            </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+    </table>"""
+
+def _build_events_table(events: list[dict]) -> str:
+    """Renders all raw events as an HTML table."""
+    if not events:
+        return "<p>No events collected.</p>"
+    rows = ""
+    for event in events:
+        rows += f"""
+        <tr>
+            <td>{event.get('timestamp', 'N/A')}</td>
+            <td>{event.get('target_username', 'N/A')}@{event.get('target_domain', 'N/A')}</td>
+            <td>{event.get('source_ip', 'N/A')}</td>
+            <td>{event.get('logon_type', 'N/A')}</td>
+            <td>{event.get('failure_reason', 'N/A')}</td>
+        </tr>"""
+    return f"""
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Target User</th>
+                <th>Source IP</th>
+                <th>Logon Type</th>
+                <th>Failure Reason</th>
+            </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+    </table>"""
