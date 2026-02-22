@@ -207,8 +207,4 @@ Konsolda hangi IP'lerin şüpheli olduğunu göreceksin. İş bitince `reports/`
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:89b4fa,50:1a1b2e,100:0f1117&height=120&section=footer&animation=fadeIn" />
 
-**Projeyi beğendiysen ⭐ atmayı unutma**
-
-*Siber güvenlik topluluğu için ❤️ ile yapılmıştır*
-
 </div>
