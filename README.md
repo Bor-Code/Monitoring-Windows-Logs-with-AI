@@ -145,7 +145,7 @@ Konsolda hangi IP'lerin şüpheli olduğunu göreceksin. İş bitince `reports/`
 
 ---
 
-## 📊 Raporda ne var?
+## Raporda ne var?
 
 | Bölüm | İçerik |
 |-------|--------|
