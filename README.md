@@ -32,19 +32,19 @@ Bu araç tam olarak bunları buluyor. Windows'un kendi güvenlik loglarını oku
 
 ---
 
-## ✨ Özellikler
+## Özellikler
 
 <table>
 <tr>
 <td width="50%">
 
-### 🔍 Olay Toplama
+### Olay Toplama
 Windows Security Log'dan başarısız giriş denemelerini (`Event ID 4625`) otomatik çekip parse eder. Kaynak IP, hedef kullanıcı, logon tipi — hepsini hazırlar.
 
 </td>
 <td width="50%">
 
-### 🧠 Anomali Tespiti
+### Anomali Tespiti
 Brute Force ve Multi-Account Targeting kurallarıyla şüpheli IP'leri yakalar. Eşik değerleri istenildiğinde ayarlanabilir.
 
 </td>
@@ -52,13 +52,13 @@ Brute Force ve Multi-Account Targeting kurallarıyla şüpheli IP'leri yakalar. 
 <tr>
 <td width="50%">
 
-### 🤖 Yapay Zeka Değerlendirmesi
+### Yapay Zeka Değerlendirmesi
 Groq üzerinde **LLaMA 3.3 70B** ile bulgular analiz edilir. Tehdit seviyesi belirlenir, her IP'nin ne yapmaya çalıştığı açıklanır, ne yapman gerektiği söylenir.
 
 </td>
 <td width="50%">
 
-### 📊 HTML Rapor Üretimi
+### HTML Rapor Üretimi
 Her analizin sonunda otomatik olarak şık, zaman damgalı bir HTML raporu oluşturulur. Renk kodlu tehdit seviyesi, tablolar ve AI yorumu tek belgede.
 
 </td>
@@ -67,14 +67,14 @@ Her analizin sonunda otomatik olarak şık, zaman damgalı bir HTML raporu oluş
 
 ---
 
-## 🚀 Nasıl çalışıyor?
+## Nasıl çalışıyor?
 
 ```
 1. Windows Security Log'u okur  →  4625 (başarısız giriş denemeleri)
             ↓
 2. Kural motorunu çalıştırır
-   ├─ Aynı IP'den 5+ başarısız deneme   →  🚨 BRUTE_FORCE
-   └─ Aynı IP'den 3+ farklı kullanıcı  →  🚨 MULTI_ACCOUNT_TARGETING
+   ├─ Aynı IP'den 5+ başarısız deneme   →  BRUTE_FORCE
+   └─ Aynı IP'den 3+ farklı kullanıcı  →   MULTI_ACCOUNT_TARGETING
             ↓
 3. Bulgularını LLaMA 3.3'e gönderir  →  Groq API
             ↓
@@ -83,7 +83,7 @@ Her analizin sonunda otomatik olarak şık, zaman damgalı bir HTML raporu oluş
 
 ---
 
-## 🛠️ Kurulum
+##  Kurulum
 
 Önce [Groq'tan](https://console.groq.com) ücretsiz bir API anahtarı al. Sonra:
 
@@ -104,11 +104,11 @@ GROQ_API_KEY=buraya_kendi_anahtarını_yaz
 LLM_PROVIDER=groq
 ```
 
-> ⚠️ `.env` dosyasını asla Git'e ekleme — `.gitignore` tarafından zaten korunuyor.
+>  `.env` dosyasını asla Git'e ekleme — `.gitignore` tarafından zaten korunuyor.
 
 ---
 
-## 🖥️ Çalıştırma
+##  Çalıştırma
 
 > Terminali **yönetici olarak** aç — Security loglarına erişmek için gerekli.
 
@@ -149,14 +149,14 @@ Konsolda hangi IP'lerin şüpheli olduğunu göreceksin. İş bitince `reports/`
 
 | Bölüm | İçerik |
 |-------|--------|
-| 🟢🟡🔴 Tehdit Seviyesi | CLEAN / MEDIUM / HIGH — renkli banner ile |
-| 🚨 Şüpheli IP'ler | Deneme sayısı, hedef kullanıcılar, tetiklenen kurallar |
-| 📋 Ham Loglar | Tüm başarısız girişlerin tam listesi |
-| 🤖 AI Yorumu | Tehdidin ne anlama geldiği ve ne yapman gerektiği |
+| Tehdit Seviyesi | CLEAN / MEDIUM / HIGH — renkli banner ile |
+| Şüpheli IP'ler | Deneme sayısı, hedef kullanıcılar, tetiklenen kurallar |
+| Ham Loglar | Tüm başarısız girişlerin tam listesi |
+| AI Yorumu | Tehdidin ne anlama geldiği ve ne yapman gerektiği |
 
 ---
 
-## 📁 Proje yapısı
+## Proje yapısı
 
 ```
 ├── src/
@@ -173,7 +173,7 @@ Konsolda hangi IP'lerin şüpheli olduğunu göreceksin. İş bitince `reports/`
 
 ---
 
-## 🔍 Tespit Kuralları
+## Tespit Kuralları
 
 | Kural | Ne anlama geliyor | Varsayılan Eşik |
 |-------|-------------------|-----------------|
@@ -184,7 +184,7 @@ Konsolda hangi IP'lerin şüpheli olduğunu göreceksin. İş bitince `reports/`
 
 ---
 
-## 📝 Notlar
+## Notlar
 
 - Sadece **Windows**'ta çalışır — Security Log'a erişmek için `pywin32` kullanıyor
 - API anahtarını `.env` dışına sakın yazma
@@ -193,7 +193,7 @@ Konsolda hangi IP'lerin şüpheli olduğunu göreceksin. İş bitince `reports/`
 
 ---
 
-## 🗺️ Yol haritası
+## Yol haritası
 
 - [ ] OpenAI ve Ollama desteği
 - [ ] E-posta / Slack bildirimleri
